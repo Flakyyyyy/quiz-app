@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizMaster Pro</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ════ PAGE: HOME ════ -->
+  <div id="page-home" class="page active">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <h1>QuizMaster Pro</h1>
+      <p>Интерактивные викторины с аналитикой и статистикой</p>
+    </div>
+    <div class="menu-grid">
+      <div class="menu-card" onclick="window.app.showQuizList()">
+        <span class="menu-card-icon">🎯</span>
+        <h2>Пройти тест</h2>
+        <p>Выбери тест и проверь свои знания</p>
+      </div>
+      <div class="menu-card" onclick="window.app.showManage()">
+        <span class="menu-card-icon">✏️</span>
+        <h2>Управление</h2>
+        <p>Создать или редактировать тест</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PAGE: QUIZ LIST (play) ════ -->
+  <div id="page-quiz-list" class="page">
+    <div class="topbar">
+      <div class="back-btn" onclick="window.app.showHome()">←</div>
+      <h2>Выбери тест</h2>
+    </div>
+    <div id="quiz-list-container"></div>
+  </div>
+
+  <!-- ════ PAGE: MANAGE ════ -->
+  <div id="page-manage" class="page">
+    <div class="topbar">
+      <div class="back-btn" onclick="window.app.showHome()">←</div>
+      <h2>Управление тестами</h2>
+    </div>
+    <div style="display:flex;gap:12px;margin-bottom:24px">
+      <button class="btn btn-primary" onclick="window.app.startCreate()">+ Создать тест</button>
+    </div>
+    <div id="manage-list-container"></div>
+  </div>
+
+  <!-- ════ PAGE: CREATE / EDIT ════ -->
+  <div id="page-create" class="page">
+    <div class="topbar">
+      <div class="back-btn" onclick="window.app.showManage()">←</div>
+      <h2 id="create-page-title">Новый тест</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Настройки теста</div>
+      <div class="form-group">
+        <label class="form-label">Название теста</label>
+        <input class="form-input" id="quiz-name" placeholder="Например: История России" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Эмодзи-иконка (один символ)</label>
+        <input class="form-input" id="quiz-icon" placeholder="📚" maxlength="2" style="width:100px" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Количество вопросов</label>
+        <div class="num-select">
+          <div class="num-btn" onclick="window.app.changeQCount(-1)">−</div>
+          <div class="num-val" id="q-count-val">3</div>
+          <div class="num-btn" onclick="window.app.changeQCount(1)">+</div>
+          <span style="color:var(--text2);font-size:14px">вопросов</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Вариантов ответа на каждый вопрос</label>
+        <div class="num-select">
+          <div class="num-btn" onclick="window.app.changeOptCount(-1)">−</div>
+          <div class="num-val" id="opt-count-val">4</div>
+          <div class="num-btn" onclick="window.app.changeOptCount(1)">+</div>
+          <span style="color:var(--text2);font-size:14px">вариантов</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Время на вопрос (секунды, 0 = без ограничений)</label>
+        <div class="num-select">
+          <div class="num-btn" onclick="window.app.changeTimerVal(-5)">−</div>
+          <div class="num-val" id="timer-val">30</div>
+          <div class="num-btn" onclick="window.app.changeTimerVal(5)">+</div>
+          <span style="color:var(--text2);font-size:14px">сек.</span>
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-full" onclick="window.app.applySettings()" style="margin-top:4px">
+        Применить настройки →
+      </button>
+    </div>
+
+    <div class="section-divider"></div>
+    <div class="card-title" style="margin-bottom:16px">Вопросы</div>
+    <div id="questions-editor" class="questions-scroll"></div>
+    <div style="margin-top:16px;display:flex;gap:12px">
+      <button class="btn btn-primary" onclick="window.app.saveQuiz()">💾 Сохранить тест</button>
+      <button class="btn btn-secondary" onclick="window.app.exportQuiz()">📥 Экспорт JSON</button>
+    </div>
+    <label style="margin-top:12px;display:block">
+      <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">📂 Импорт JSON</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="window.app.importQuiz(this)" />
+    </label>
+  </div>
+
+  <!-- ════ PAGE: PLAY ════ -->
+  <div id="page-play" class="page">
+    <div class="topbar">
+      <div class="back-btn" onclick="window.app.confirmExit()">←</div>
+      <h2 id="play-title">Викторина</h2>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-pill">
+        🏆 <span id="score-display">0</span> <span class="label">очков</span>
+      </div>
+      <div class="stat-pill">
+        ✅ <span id="correct-display">0</span> <span class="label">верно</span>
+      </div>
+      <div class="stat-pill">
+        ❌ <span id="wrong-display">0</span> <span class="label">неверно</span>
+      </div>
+      <div class="stat-pill timer-display" id="timer-pill">
+        ⏱ <span id="timer-text">—</span>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="question-header">
+      <span class="question-num" id="question-num">Вопрос 1 из 10</span>
+      <span style="font-size:13px;color:var(--text2)" id="streak-info"></span>
+    </div>
+    <div class="card">
+      <div class="question-text" id="question-text"></div>
+      <div class="options-grid" id="options-container"></div>
+      <div class="feedback" id="feedback-box"></div>
+      <button class="btn btn-primary btn-full" id="next-btn" onclick="window.app.nextQuestion()" style="display:none">
+        Следующий вопрос →
+      </button>
+    </div>
+  </div>
+
+  <!-- ════ PAGE: RESULTS ════ -->
+  <div id="page-results" class="page">
+    <div class="topbar">
+      <div class="back-btn" onclick="window.app.showHome()">🏠</div>
+      <h2>Результаты</h2>
+    </div>
+    <div class="card">
+      <div class="result-hero">
+        <div class="result-score-circle">
+          <div class="result-score-num" id="res-pct">0%</div>
+          <div class="result-score-label">результат</div>
+        </div>
+        <div class="result-title" id="res-title">Отличная работа!</div>
+        <div class="result-sub" id="res-sub"></div>
+      </div>
+      <div class="results-grid">
+        <div class="result-stat">
+          <div class="val val-green" id="res-correct">0</div>
+          <div class="lbl">правильных</div>
+        </div>
+        <div class="result-stat">
+          <div class="val val-red" id="res-wrong">0</div>
+          <div class="lbl">неправильных</div>
+        </div>
+        <div class="result-stat">
+          <div class="val val-gold" id="res-score">0</div>
+          <div class="lbl">очков</div>
+        </div>
+        <div class="result-stat">
+          <div class="val" id="res-time">0s</div>
+          <div class="lbl">затрачено</div>
+        </div>
+        <div class="result-stat">
+          <div class="val" id="res-avg">0s</div>
+          <div class="lbl">на вопрос</div>
+        </div>
+        <div class="result-stat">
+          <div class="val" id="res-streak">0</div>
+          <div class="lbl">макс. серия</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="window.app.restartQuiz()" style="flex:1">🔄 Ещё раз</button>
+        <button class="btn btn-secondary" onclick="window.app.showQuizList()" style="flex:1">📋 Другой тест</button>
+        <button class="btn btn-secondary" onclick="window.app.showHome()" style="flex:1">🏠 Домой</button>
+      </div>
+    </div>
+
+    <!-- Answer review -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">Разбор вопросов</div>
+      <div id="review-container"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

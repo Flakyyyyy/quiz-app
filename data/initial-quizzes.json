@@ -1,0 +1,53 @@
+[
+  {
+    "id": "q1",
+    "name": "JavaScript основы",
+    "icon": "⚡",
+    "timePerQ": 30,
+    "questions": [
+      {
+        "question": "Какой тип данных возвращает typeof null?",
+        "options": ["null", "object", "undefined", "string"],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Что выведет console.log(0.1 + 0.2 === 0.3)?",
+        "options": ["true", "false", "NaN", "Error"],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Какой метод массива не изменяет исходный массив?",
+        "options": ["push", "splice", "map", "sort"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Что такое замыкание в JavaScript?",
+        "options": ["Функция без return", "Функция с доступом к внешней области видимости", "Анонимная функция", "Метод класса"],
+        "correctAnswer": 1
+      }
+    ]
+  },
+  {
+    "id": "q2",
+    "name": "История России",
+    "icon": "🏰",
+    "timePerQ": 45,
+    "questions": [
+      {
+        "question": "В каком году произошла Куликовская битва?",
+        "options": ["1240", "1380", "1480", "1552"],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Кто основал Санкт-Петербург?",
+        "options": ["Иван Грозный", "Екатерина II", "Пётр I", "Александр I"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "В каком году Россия отменила крепостное право?",
+        "options": ["1812", "1825", "1861", "1905"],
+        "correctAnswer": 2
+      }
+    ]
+  }
+]
